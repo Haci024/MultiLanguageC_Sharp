@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Localization;
+﻿using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using MultiLanguageC_.Connect;
 using MultiLanguageC_.Models;
 using MultiLanguageC_.Services;
 using System.Diagnostics;
@@ -8,52 +9,43 @@ namespace MultiLanguageC_.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly LocalizationService _localizationService;
+      
+        private readonly LanguageDbContext _db;
 
-        public HomeController(LocalizationService localizationService)
+        public HomeController(LocalizationService localizationService,LanguageDbContext db, LanguageService languageService)
         {
-            _localizationService = localizationService;
+         
+            _db = db;   
         }
 
         public IActionResult Index()
         {
+
            
-            var culture = HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name ?? "en-US";
-
+         List<Customers> model=_db.Customers.ToList();
             
-            var welcomeMessage = _localizationService.GetResource(culture, "HomePage_Title");
 
-            
-            ViewBag.WelcomeMessage = welcomeMessage;
-            ViewBag.CurrentCulture = culture;
-            return View();
+            return View(model);
         }
+
         [HttpGet]
         public IActionResult SetLanguage(string culture)
         {
+            
             Response.Cookies.Append(
                 CookieRequestCultureProvider.DefaultCookieName,
                 CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddDays(1) }
             );
 
-            string returnUrl = Request.Headers["Referer"].ToString();
-            return Redirect(returnUrl);
+            return RedirectToAction("Index");
         }
+        [HttpGet]
         public IActionResult Privacy()
         {
-
-            var culture = HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name ?? "en-US";
-
-
-            var welcomeMessage = _localizationService.GetResource(culture, "HomePage_Title");
-
-
-            ViewBag.WelcomeMessage = welcomeMessage;
-            ViewBag.CurrentCulture = culture;
             return View();
         }
-
-
     }
+
+
 }

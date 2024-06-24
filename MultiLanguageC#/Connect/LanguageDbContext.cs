@@ -5,6 +5,7 @@
 
     public class LanguageDbContext : DbContext
     {
+        public DbSet<Customers> Customers { get; set; }
         public DbSet<Localization> Localizations { get; set; }
 
         public LanguageDbContext(DbContextOptions<LanguageDbContext> options) : base(options) { }

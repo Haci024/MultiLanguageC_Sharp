@@ -10,30 +10,30 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<LanguageDbContext>();
 builder.Services.AddScoped<LocalizationService>();
-
+builder.Services.AddScoped<LanguageService>();
+builder.Services.AddHttpContextAccessor();
 // Add Localization services
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("tr-TR") };
-    options.DefaultRequestCulture = new RequestCulture("en-US");
+    var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("tr-TR"), new CultureInfo("az-AZ") };
+    options.DefaultRequestCulture = new RequestCulture("az-AZ");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    
     app.UseDeveloperExceptionPage();
-    
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
